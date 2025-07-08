@@ -1,3 +1,7 @@
+from StackBasic import stack
+import heapq
+
+
 class Graphs:
     def __init__(self,directed=False):
         self.directed=directed
@@ -87,6 +91,45 @@ class Graphs:
 
     def obtain_neighbours(self, node):
         return self.adj_list.get(node,set())
+
+    def dijkstra(self,start_node):
+        distances={node:float('inf') for node in self.adj_list}
+        distances[start_node] = 0
+        priority_queue=[(0,start_node)]
+        previous={node:None for node in self.adj_list}
+
+        while priority_queue:
+            current_distance, current_node=heapq.heappop(priority_queue)
+
+            if current_distance>distances[current_node]:
+                continue
+
+            for neighbour in self.obtain_neighbours(current_node):
+                if isinstance(neighbour,tuple):
+                    neighbour_node,weight=neighbour
+                else:
+                    neighbour_node=neighbour
+                    weight =1
+
+                distance = current_distance + weight
+                if distance < distances[neighbour_node]:
+                    distances[neighbour_node] = distance
+                    previous[neighbour_node] = current_node
+                    heapq.heappush(priority_queue,(distance,neighbour_node))
+
+            return distances, previous
+
+        def get_shortest_path(self,previous,end_node):
+            path=[]
+            current=end_node
+
+            while current is not None:
+                path.insert(0, current)
+                current=previous[current]
+
+            return path
+
+
 
 
 if __name__=='__main__':
